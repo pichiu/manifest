@@ -79,18 +79,17 @@ flowchart TD
 
 #### 概覽與分析
 
-| Method | Path | Query Params | 說明 |
-|--------|------|-------------|------|
-| GET | `/api/v1/overview` | `range`, `agent_name` | Dashboard 概覽（token/cost/message 摘要 + 時序資料） |
-| GET | `/api/v1/tokens` | `range`, `agent_name` | Token 用量分析 |
-| GET | `/api/v1/costs` | `range`, `agent_name` | 費用分析 |
-| GET | `/api/v1/messages` | `range`, `provider`, `service_type`, `cost_min`, `cost_max`, `limit`, `cursor`, `agent_name` | 分頁 Message log |
-| GET | `/api/v1/messages/:id/details` | — | Message 詳細資訊 |
-| PATCH | `/api/v1/messages/:id/feedback` | — | 設定 Message 評分（Body: `rating`, `tags`, `details`） |
-| DELETE | `/api/v1/messages/:id/feedback` | — | 清除 Message 評分 |
-| GET | `/api/v1/security` | — | Security score + 事件列表 |
-| GET | `/api/v1/model-prices` | — | 所有模型定價（從 OpenRouter 快取） |
-| GET | `/api/v1/events` | — | SSE 即時事件流（僅支援 Session 認證） |
+| Method | Path | 說明 |
+|--------|------|------|
+| GET | `/api/v1/overview` | Dashboard 概覽（摘要 + 時序，Query: `range`, `agent_name`） |
+| GET | `/api/v1/tokens` | Token 用量分析（Query: `range`, `agent_name`） |
+| GET | `/api/v1/costs` | 費用分析（Query: `range`, `agent_name`） |
+| GET | `/api/v1/messages` | 分頁 Message log（Query: `range`, `provider`, `cost_min/max`, `limit`, `cursor`, `agent_name`） |
+| GET | `/api/v1/messages/:id/details` | Message 詳細資訊 |
+| PATCH/DELETE | `/api/v1/messages/:id/feedback` | 設定/清除 Message 評分 |
+| GET | `/api/v1/security` | Security score + 事件列表 |
+| GET | `/api/v1/model-prices` | 所有模型定價（OpenRouter 快取） |
+| GET | `/api/v1/events` | SSE 即時事件流（僅支援 Session 認證） |
 
 #### Agent 管理
 
@@ -113,18 +112,13 @@ flowchart TD
 | DELETE | `/api/v1/routing/:agentName/providers/:provider` | 移除 provider |
 | POST | `/api/v1/routing/:agentName/providers/deactivate-all` | 停用所有 provider |
 | GET | `/api/v1/routing/:agentName/tiers` | 取得 Tier 設定 |
-| PUT | `/api/v1/routing/:agentName/tiers/:tier` | 設定 Tier Primary Model |
-| DELETE | `/api/v1/routing/:agentName/tiers/:tier` | 清除 Tier Override |
+| PUT/DELETE | `/api/v1/routing/:agentName/tiers/:tier` | 設定/清除 Tier Primary Model |
 | POST | `/api/v1/routing/:agentName/tiers/reset-all` | 重設所有 Tier |
-| GET | `/api/v1/routing/:agentName/tiers/:tier/fallbacks` | 取得 Tier Fallback 列表 |
-| PUT | `/api/v1/routing/:agentName/tiers/:tier/fallbacks` | 設定 Tier Fallback 模型 |
-| DELETE | `/api/v1/routing/:agentName/tiers/:tier/fallbacks` | 清除 Tier Fallback |
+| GET/PUT/DELETE | `/api/v1/routing/:agentName/tiers/:tier/fallbacks` | Tier Fallback CRUD |
 | GET | `/api/v1/routing/:agentName/specificity` | 取得 Specificity 設定 |
-| PUT | `/api/v1/routing/:agentName/specificity/:category` | 設定 Specificity Primary Model |
+| PUT/DELETE | `/api/v1/routing/:agentName/specificity/:category` | 設定/清除 Specificity Primary Model |
 | POST | `/api/v1/routing/:agentName/specificity/:category/toggle` | 啟用/停用 Specificity Category |
-| DELETE | `/api/v1/routing/:agentName/specificity/:category` | 清除 Specificity Override |
-| PUT | `/api/v1/routing/:agentName/specificity/:category/fallbacks` | 設定 Specificity Fallback |
-| DELETE | `/api/v1/routing/:agentName/specificity/:category/fallbacks` | 清除 Specificity Fallback |
+| PUT/DELETE | `/api/v1/routing/:agentName/specificity/:category/fallbacks` | Specificity Fallback CRUD |
 | POST | `/api/v1/routing/:agentName/specificity/reset-all` | 重設所有 Specificity |
 | GET | `/api/v1/routing/:agentName/available-models` | 已連接 provider 的可用模型列表 |
 | POST | `/api/v1/routing/:agentName/refresh-models` | 重新探索所有 provider 的模型 |
