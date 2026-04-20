@@ -136,18 +136,12 @@ flowchart TD
 
 | Method | Path | 說明 |
 |--------|------|------|
-| GET | `/api/v1/notifications` | 列出告警規則（Query: `agent_name`） |
-| POST | `/api/v1/notifications` | 建立告警規則 |
-| PATCH | `/api/v1/notifications/:id` | 更新告警規則 |
-| DELETE | `/api/v1/notifications/:id` | 刪除告警規則 |
-| GET | `/api/v1/notifications/logs` | 取得通知發送 log（Query: `agent_name`） |
-| GET | `/api/v1/notifications/email-provider` | 取得 Email Provider 設定 |
-| POST | `/api/v1/notifications/email-provider` | 設定 Email Provider |
-| DELETE | `/api/v1/notifications/email-provider` | 移除 Email Provider |
-| POST | `/api/v1/notifications/email-provider/test` | 測試 Email Provider 設定 |
-| POST | `/api/v1/notifications/email-provider/test-saved` | 用已存設定測試發信 |
-| GET | `/api/v1/notifications/notification-email` | 取得通知收件地址 |
-| POST | `/api/v1/notifications/notification-email` | 設定通知收件地址 |
+| GET/POST | `/api/v1/notifications` | 列出/建立告警規則（Query: `agent_name`） |
+| PATCH/DELETE | `/api/v1/notifications/:id` | 更新/刪除告警規則 |
+| GET | `/api/v1/notifications/logs` | 通知發送 log（Query: `agent_name`） |
+| GET/POST/DELETE | `/api/v1/notifications/email-provider` | Email Provider CRUD |
+| POST | `/api/v1/notifications/email-provider/test` | 測試 Email Provider（未存 or 已存） |
+| GET/POST | `/api/v1/notifications/notification-email` | 取得/設定通知收件地址 |
 | POST | `/api/v1/notifications/trigger-check` | 手動觸發 threshold 檢查 |
 
 ### 2.3 Agent 入口（Bearer mnfst_* Token）
@@ -261,7 +255,7 @@ Dashboard 概覽，回傳多個聚合指標。
 }
 ```
 
-> 回應有 `UserCacheInterceptor` 快取（依用戶），預設 TTL = `DASHBOARD_CACHE_TTL_MS`。
+> 回應有 `UserCacheInterceptor` 快取（依用戶），TTL = `DASHBOARD_CACHE_TTL_MS`。
 
 ---
 
@@ -321,9 +315,9 @@ Dashboard 概覽，回傳多個聚合指標。
 }
 ```
 
-- `name`：必填，會自動 slugify（轉小寫、替換空白為 `-`）
+- `name`：必填，自動 slugify（轉小寫、空白換 `-`）
 - `agent_category`：選填，Agent 任務類型
-- `agent_platform`：選填，Agent 平台（`openclaw`/`hermes`/`openai-sdk` 等）
+- `agent_platform`：選填（`openclaw`/`hermes`/`openai-sdk` 等）
 
 **Response**：
 ```json
@@ -504,11 +498,7 @@ Proxy 端的速率限制透過 `ProxyRateLimiter` 服務管理，同時追蹤 co
 
 ### 5.3 Dashboard 快取
 
-Dashboard 分析 API 啟用 `UserCacheInterceptor`，依用戶 ID 作為 cache key，避免同一用戶短時間內重複計算：
-
-- 快取儲存：記憶體（`@nestjs/cache-manager`）
-- TTL：`DASHBOARD_CACHE_TTL_MS`（設定於 `cache.constants.ts`）
-- 快取失效：Agent 建立/刪除時手動清除相關 key
+Dashboard 分析 API 啟用 `UserCacheInterceptor`（cache key = userId），TTL = `DASHBOARD_CACHE_TTL_MS`（記憶體快取）。Agent 建立/刪除時手動 invalidate 相關 key。
 
 ---
 
